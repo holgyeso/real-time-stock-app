@@ -1,0 +1,42 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "hadesarchitect",
+  "signedByOrgName": "hadesarchitect",
+  "plugin": "hadesarchitect-cassandra-datasource",
+  "version": "2.3.0",
+  "time": 1695841219115,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "cassandra-plugin_darwin_amd64": "573372e2921a3b85f5cfff6c69acaa9d156e39c380bbce6b825e17c6fcb52281",
+    "CHANGELOG.md": "46686bd06ebf2d13d7b7ed61e60136c3a5c311d3cba6713e2c08c3185cc951ec",
+    "LICENSE": "65b6092f1f311c776118c0f039b6ec8928931af9f3bc15ea493ecce87d1fa5ab",
+    "img/config.png": "d2a46c0dd65bdaf57d8b33cf8c103b46234518f2b87f140fa7b274dcbc74427f",
+    "img/configurator.png": "c2365b4738d59a3883917af2bc17f0933ec888d1ac19f28cc216bdb67f05a01c",
+    "img/cassandra.svg": "5949151e09765f7d8cbbfcdd1589d396ec35abaa5a2965b8a428f610a755f047",
+    "img/suggestions.png": "be30abcce0f41a6b8a1c3f0d845f8a51b95631dff91a83743b1cd19f45d3de07",
+    "img/editor.png": "c193ac6791a1fd73d64fdd3f33a9cbd4fcc1f19d19be8f2346ff953946d5da36",
+    "plugin.json": "eabda4ed41c74bccd71b77059fb89047dafa8deb8540e9efcefbdea53bf2d16e",
+    "cassandra-plugin_linux_arm64": "8815323281c9fe40cb3ccf26390b34bfc6c2a10909a03d198f2ddcc854cdf62e",
+    "cassandra-plugin_linux_amd64": "bb17d87c7884b6d7b1164069e554732da3d9b705174cc2d8c318eda68ed917d9",
+    "cassandra-plugin_windows_amd64.exe": "01590c4cea076eeac8c4ce1a4f72352c5b03c58226b6e33379c366b0b9be31a1",
+    "module.js": "6ae4c226d35f11b65a29e357837be1fe775949f3228088f24901cd0b39571e17",
+    "module.js.map": "90a649dc85ca53b8c02ce1c0f10d94fa2e3d1a7a904e27042c9cd3b55be036ca",
+    "README.md": "37c44669f0775653767c48130fffe7a76fcc4fba6d2cb822bd1af3b14a4a9874"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.10
+Comment: https://openpgpjs.org
+
+wrkEARMKAAYFAmUUe8MAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5yBnAgkBP4bOlOqEeu06bpapflDYeLjYLm3Qv7AE+2LVNTylciPLPxte
+PhGQc2UCFVF40jgXw3giPTdyCpNBBSsoLyvqZK4CCQHB8Ee60eNL0pd9yolP
+V5qyDU7apAuSCkuFFB8+rmRD5XL2u37ntfaIYMV4b4FyXOb4ocL72Q+1byM8
+Bzj8ATpdQw==
+=ZZRC
+-----END PGP SIGNATURE-----

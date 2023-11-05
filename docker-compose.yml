@@ -1,0 +1,31 @@
+version: '3'
+services:
+  cassandra:
+    image: cassandra:4.1.3
+    container_name: db-cassandra
+    ports:
+      - '9042:9042'
+    volumes:
+      - "./make-cassandra-tables.sh:/make-cassandra-tables.sh"
+    command: "sh /make-cassandra-tables.sh"
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: viz-grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
+  pyspark:
+    build: 
+      context: .
+      dockerfile: PySparkDockerFile
+    volumes:
+      - "./real_time_processing.py:/real_time_processing.py"
+      - "./pyspark_init.sh:/pyspark_init.sh"
+      - "./input:/input"
+    command: '/pyspark_init.sh'
+    container_name: py-spark
