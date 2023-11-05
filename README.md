@@ -57,11 +57,9 @@ The dockerized application currently consists of 3 images:
 2. enter the downloaded folder: `cd real-time-stock-app`
 3. build & start docker container: `docker compose up -d`
     
-    The `cassandra` images takes a while until it will be correctly initiated. To assure that this is up and running among the logs the *"superuser role created"* message should appear.
+    The `cassandra` images takes a while until it will be correctly initiated. To assure that this is up and running among the logs the *"Created default superuser role 'cassandra'"* message should appear.
 
-    In the meanwhile, `pyspark` will exit with failure, because it cannot communicate with `cassandra`. Therefore, after `cassandra` is up and running, you should restart this container.
-
-4. navigate to `localhost:3000`, enter admin username and admin password and open the `Stock - dashboard` Grafana dashboard, that should display 3 empty charts.
+4. navigate to `localhost:3000` and open the `Stock - dashboard` Grafana dashboard, that should display 3 empty charts.
 
 5. execute the cells from `generate_random_json.ipynb` that will generate in a loop JSON files into the `input` folder, that is mirrored to `/input` in the PySpark docker container.
 
