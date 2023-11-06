@@ -6,7 +6,7 @@ services:
     ports:
       - '9042:9042'
     volumes:
-      - "./make-cassandra-tables.sh:/make-cassandra-tables.sh"
+      - "./scripts/make-cassandra-tables.sh:/make-cassandra-tables.sh"
     command: "sh /make-cassandra-tables.sh"
     healthcheck:
       test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
@@ -24,8 +24,19 @@ services:
       context: .
       dockerfile: PySparkDockerFile
     volumes:
-      - "./real_time_processing.py:/real_time_processing.py"
-      - "./pyspark_init.sh:/pyspark_init.sh"
+      - "./scripts/real_time_processing.py:/real_time_processing.py"
+      - "./scripts/pyspark_init.sh:/pyspark_init.sh"
       - "./input:/input"
     command: '/pyspark_init.sh'
     container_name: py-spark
+  python:
+    build:
+      context: .
+      dockerfile: PythonDockerFile
+    container_name: finnhub-python
+    volumes:
+      - "./input:/input"
+      - "./scripts/get_trades_from_finnhub.py:/get_trades_from_finnhub.py"
+    command: "python /get_trades_from_finnhub.py"
+    environment:
+      - FINNHUB_TOKEN=${FINNHUB_TOKEN}

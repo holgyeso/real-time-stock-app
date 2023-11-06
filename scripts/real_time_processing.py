@@ -28,6 +28,7 @@ streaming_df = spark.readStream \
                     .format("json") \
                     .schema(schema) \
                     .option("multiLine", "True") \
+                    .option("cleanSource", "delete") \
                     .load(path="/input")
 
 # process the data

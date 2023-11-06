@@ -1,0 +1,7 @@
+FROM python:3.9.18-alpine3.18
+
+USER root
+
+RUN pip install cassandra-driver
+RUN pip install asyncore-wsgi
+RUN pip install websocket-client
