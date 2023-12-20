@@ -1,7 +1,8 @@
-FROM python:3.9.18-alpine3.18
+FROM apache/spark-py:v3.4.0
 
 USER root
 
 RUN pip install cassandra-driver
 RUN pip install asyncore-wsgi
 RUN pip install websocket-client
+RUN pip install pyspark

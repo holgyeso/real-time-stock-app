@@ -1,0 +1,19 @@
+FROM apache/spark-py:v3.4.0
+
+EXPOSE 8501
+
+USER root
+
+RUN pip install cassandra-driver
+RUN pip install pandas
+RUN pip install streamlit
+RUN pip install pyspark
+
+
+# https://groups.google.com/g/cloud-dataproc-discuss/c/gq--6Qt7BQc
+RUN pip uninstall delta-spark
+RUN pip install delta-spark==2.1.1
+
+CMD streamlit run /streamlit_app/✨_Welcome.py
+
+

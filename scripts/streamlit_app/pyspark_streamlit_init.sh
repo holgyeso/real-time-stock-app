@@ -1,0 +1,1 @@
+/opt/spark/bin/pyspark < /streamlit_app/.py

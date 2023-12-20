@@ -1,5 +1,5 @@
 CQL="
-CREATE KEYSPACE stockapp WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
+CREATE KEYSPACE IF NOT EXISTS stockapp WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
 CREATE TABLE IF NOT EXISTS stockapp.trades(ts timestamp, symbol VARCHAR, price DECIMAL, volume INT, PRIMARY KEY(symbol, ts));
 "
 

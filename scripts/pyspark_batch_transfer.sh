@@ -1,0 +1,1 @@
+/opt/spark/bin/pyspark --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.1 < /transfer_real_to_batch.py

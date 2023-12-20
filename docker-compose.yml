@@ -1,5 +1,65 @@
 version: '3'
 services:
+
+  # Hadoop & Hive from big-data-europe/docker-hive:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
+    volumes:
+      - ./namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "50070:50070"
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+    volumes:
+      - ./datanode:/hadoop/dfs/data
+    env_file:
+      - ./hadoop-hive.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
+    ports:
+      - "50075:50075"
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    env_file:
+      - ./hadoop-hive.env
+    environment:
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    env_file:
+      - ./hadoop-hive.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+    ports:
+      - "9083:9083"
+  hive-metastore-postgresql:
+    image: bde2020/hive-metastore-postgresql:2.3.0
+  presto-coordinator:
+    image: shawnzhu/prestodb:0.181
+    ports:
+      - "8080:8080"
+
+  # scrape S&P500 and NASDAQ stocks from Wikipedia
+  index_scraper:
+    build:
+      context: .
+      dockerfile: DockerFile_PySpark_IndexScraper
+    container_name: stock-index-scraper
+    volumes:
+      - "./scripts/read_stock_indexes.py:/read_stock_indexes.py"
+      - "./scripts/pyspark_batch_init.sh:/pyspark_batch_init.sh"
+    command: '/pyspark_batch_init.sh'
+
+
+  # speed processing:
   cassandra:
     image: cassandra:4.1.3
     container_name: db-cassandra
@@ -19,24 +79,43 @@ services:
       - ./grafana:/var/lib/grafana
     environment:
       - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
-  pyspark:
+  real_time_pyspark:
     build: 
       context: .
-      dockerfile: PySparkDockerFile
+      dockerfile: DockerFile_PySpark_Streaming
+    container_name: real-time-trades-processing
     volumes:
       - "./scripts/real_time_processing.py:/real_time_processing.py"
       - "./scripts/pyspark_init.sh:/pyspark_init.sh"
       - "./input:/input"
     command: '/pyspark_init.sh'
-    container_name: py-spark
-  python:
+  finnhub_download:
     build:
       context: .
-      dockerfile: PythonDockerFile
-    container_name: finnhub-python
+      dockerfile: DockerFile_PySpark_Finnhub
+    container_name: finnhub-download
     volumes:
       - "./input:/input"
       - "./scripts/get_trades_from_finnhub.py:/get_trades_from_finnhub.py"
-    command: "python /get_trades_from_finnhub.py"
+      - "./scripts/pyspark_finnhub.sh:/pyspark_finnhub.sh"
+    command: "/pyspark_finnhub.sh"
     environment:
       - FINNHUB_TOKEN=${FINNHUB_TOKEN}
+  streamlit_app:
+    build:
+      context: .
+      dockerfile: DockerFile_PySpark_Streamlit
+    container_name: streamlit-app
+    ports:
+      - '8000:8501'
+    volumes:
+      - "./scripts/streamlit_app:/streamlit_app"
+  stream_batch_trasfer:
+    build:
+      context: .
+      dockerfile: Dockerfile_PySpark_StreamBatchTransfer
+    volumes:
+      - "./scripts/pyspark_batch_transfer.sh:/pyspark_batch_transfer.sh"
+      - "./scripts/transfer_real_to_batch.py:/transfer_real_to_batch.py"
+    command: /pyspark_batch_transfer.sh
+    container_name: stream-batch-transfer
