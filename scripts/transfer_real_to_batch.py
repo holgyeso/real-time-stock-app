@@ -1,13 +1,19 @@
 from pyspark.sql import SparkSession
 import time
-import datetime
 import logging
+import datetime
 from cassandra.cluster import Cluster, NoHostAvailable, DriverException
+
+transfer_data_seconds = 60
 
 while True:
 
     # 0. set the current datetime stamp
-    timestamp_now = int((datetime.datetime.now() - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
+    # timestamp_now = int(time.time() * 1000)
+    timestamp_now = round((datetime.datetime.now() - datetime.timedelta(seconds=transfer_data_seconds) - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
+
+    with open("/log.txt", mode="a") as f:
+        f.writelines(["Deleting in time " + str(timestamp_now) + "\n"])
 
     # 1. connect to Cassandra
     connected = False
@@ -33,12 +39,12 @@ while True:
                             .format("org.apache.spark.sql.cassandra") \
                             .options(table='trades', keyspace='stockapp') \
                             .load()
-            
-            # 4. truncate the table
-            connection.execute("TRUNCATE stockapp.trades;")
 
-            # 5. send to hadoop
+            # 4. send to hadoop
             cassandra_content.write.mode('append').parquet("hdfs://namenode:8020/data/trades")
+
+            # 5. delete from Cassandra
+            connection.execute(f"DELETE FROM stockapp.trades WHERE ts <= {timestamp_now} and symbol='AAPL';")
     
             
         except NoHostAvailable:
@@ -52,4 +58,4 @@ while True:
         except Exception as err:
             raise err    
 
-    time.sleep(60)
+    time.sleep(transfer_data_seconds)
