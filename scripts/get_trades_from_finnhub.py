@@ -16,6 +16,7 @@ def get_stocks_from_Hadoop():
     spark.sql("CREATE EXTERNAL TABLE IF NOT EXISTS stocks(Symbol CHAR(100), Security CHAR(200), Sector CHAR(200), Index char(200)) STORED AS PARQUET location 'hdfs://namenode:8020/data/stocks';")
     data = spark.sql("SELECT * from stocks;")
     symbols = [row.Symbol for row in data.select('Symbol').distinct().sort('Symbol').limit(10).collect()]
+    symbols = ['AAPL', 'MMM', 'GOOGL', 'TSLA']
     return symbols
     
 
