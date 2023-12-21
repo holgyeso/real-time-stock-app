@@ -13,7 +13,7 @@ while True:
     timestamp_now = round((datetime.datetime.now() - datetime.timedelta(seconds=transfer_data_seconds) - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
 
     with open("/log.txt", mode="a") as f:
-        f.writelines(["Deleting in time " + str(timestamp_now) + "\n"])
+        f.writelines(["-------\n", "Beginning in time " + str(timestamp_now) + "\n"])
 
     # 1. connect to Cassandra
     connected = False
@@ -33,18 +33,26 @@ while True:
                 .config("spark.cassandra.connection.host", "host.docker.internal:9042") \
                 .config("confirm.truncate", True) \
                 .getOrCreate()
-            
+            with open("/log.txt", mode="a") as f:
+                f.writelines(["Read rows\n"])
+
             # 3. read from Cassandra current rows
             cassandra_content = spark.read \
                             .format("org.apache.spark.sql.cassandra") \
                             .options(table='trades', keyspace='stockapp') \
-                            .load()
+                            .load() \
+                            .filter(f"ts < from_unixtime({timestamp_now})")
 
             # 4. send to hadoop
+            with open("/log.txt", mode="a") as f:
+                f.writelines(["Writing to Hadoop\n"])
             cassandra_content.write.mode('append').parquet("hdfs://namenode:8020/data/trades")
 
             # 5. delete from Cassandra
-            connection.execute(f"DELETE FROM stockapp.trades WHERE ts <= {timestamp_now} and symbol='AAPL';")
+            for stock in [row.symbol for row in cassandra_content.select('symbol').distinct().collect()]:
+                with open("/log.txt", mode="a") as f:
+                    f.writelines([f"DELETE FROM stockapp.trades WHERE ts <= {timestamp_now} and symbol='{stock}';\n"])
+                connection.execute(f"DELETE FROM stockapp.trades WHERE ts <= {timestamp_now} and symbol='{stock}';")
     
             
         except NoHostAvailable:
