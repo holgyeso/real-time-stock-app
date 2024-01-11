@@ -70,15 +70,6 @@ services:
     command: "sh /make-cassandra-tables.sh"
     healthcheck:
       test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
-  grafana:
-    image: grafana/grafana:10.2.0
-    container_name: viz-grafana
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./grafana:/var/lib/grafana
-    environment:
-      - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
   real_time_pyspark:
     build: 
       context: .
@@ -110,6 +101,7 @@ services:
       - '8000:8501'
     volumes:
       - "./scripts/streamlit_app:/streamlit_app"
+      - "./scripts/model.sav:/model.sav"
   stream_batch_trasfer:
     build:
       context: .
